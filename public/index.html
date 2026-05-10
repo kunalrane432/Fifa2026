@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⚽ FIFA 2026 — Last Pick Wins!</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>⚽</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green: #00ff87;
+      --gold: #ffd700;
+      --red: #ff3b3b;
+      --dark: #0a0f0a;
+      --card-bg: #111a11;
+      --picked: #1a2a1a;
+      --border: #1e2e1e;
+      --text: #e8f5e9;
+      --muted: #4a6a4a;
+    }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRASS LINES BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        180deg,
+        transparent,
+        transparent 60px,
+        rgba(0,255,135,0.03) 60px,
+        rgba(0,255,135,0.03) 120px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: relative;
+      text-align: center;
+      padding: 40px 20px 30px;
+      background: linear-gradient(180deg, #001a00 0%, transparent 100%);
+      border-bottom: 2px solid var(--green);
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,135,0.12) 0%, transparent 70%);
+    }
+
+    .trophy-row { font-size: 3rem; letter-spacing: 8px; margin-bottom: 8px; }
+
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      line-height: 1;
+      background: linear-gradient(135deg, #fff 0%, var(--gold) 40%, var(--green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 4px;
+    }
+
+    .subtitle {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1rem, 3vw, 1.6rem);
+      color: var(--green);
+      letter-spacing: 8px;
+      margin-top: 4px;
+    }
+
+    /* ── LAST PICK WINS BANNER ── */
+    .last-pick-banner {
+      background: linear-gradient(90deg, #1a0000, var(--red), #1a0000);
+      padding: 12px 20px;
+      text-align: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      letter-spacing: 4px;
+      color: #fff;
+      animation: pulse-banner 2s ease-in-out infinite;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes pulse-banner {
+      0%, 100% { box-shadow: 0 0 20px rgba(255,59,59,0.4); }
+      50% { box-shadow: 0 0 40px rgba(255,59,59,0.8); }
+    }
+
+    /* ── STATS BAR ── */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 20px;
+      flex-wrap: wrap;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      color: var(--green);
+      line-height: 1;
+      text-shadow: 0 0 20px rgba(0,255,135,0.5);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      padding: 0 20px 16px;
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .progress-track {
+      height: 8px;
+      background: var(--border);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green), var(--gold));
+      border-radius: 99px;
+      transition: width 0.5s ease;
+      box-shadow: 0 0 12px rgba(0,255,135,0.6);
+    }
+
+    .progress-label {
+      text-align: right;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* ── PICK FORM ── */
+    .pick-section {
+      max-width: 600px;
+      margin: 0 auto 32px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .pick-card {
+      background: var(--card-bg);
+      border: 1px solid var(--green);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 0 30px rgba(0,255,135,0.1), inset 0 1px 0 rgba(0,255,135,0.1);
+    }
+
+    .pick-card h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--green);
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    input, select {
+      flex: 1;
+      min-width: 180px;
+      background: #0d160d;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 14px 18px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      appearance: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(0,255,135,0.15);
+    }
+
+    select option { background: #111; }
+
+    .pick-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(135deg, #00c96b, #00ff87);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 3px;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .pick-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(0,255,135,0.4);
+    }
+
+    .pick-btn:active { transform: translateY(0); }
+
+    .pick-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .pick-btn:hover::after { opacity: 1; }
+
+    .toast {
+      margin-top: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: none;
+    }
+    .toast.success { background: rgba(0,255,135,0.1); border: 1px solid var(--green); color: var(--green); }
+    .toast.error { background: rgba(255,59,59,0.1); border: 1px solid var(--red); color: var(--red); }
+
+    /* ── LIVE FEED ── */
+    .live-feed-wrap {
+      max-width: 600px;
+      margin: 0 auto 32px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .live-feed-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      color: var(--muted);
+      letter-spacing: 3px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .feed-item {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slide-in 0.4s ease;
+    }
+
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .feed-item .flag { font-size: 1.4rem; }
+    .feed-item .feed-name { font-weight: 700; color: var(--green); }
+    .feed-time { margin-left: auto; color: var(--muted); font-size: 0.8rem; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      max-width: 1400px;
+      margin: 0 auto 24px;
+      padding: 0 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .filter-label { font-size: 0.8rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
+
+    .filter-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-btn.active, .filter-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+      background: rgba(0,255,135,0.08);
+    }
+
+    /* ── TEAM GRID ── */
+    .team-grid {
+      max-width: 1400px;
+      margin: 0 auto 60px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .team-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .team-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 0%, rgba(0,255,135,0.08) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .team-card:hover:not(.picked) {
+      transform: translateY(-4px) scale(1.03);
+      border-color: var(--green);
+      box-shadow: 0 8px 30px rgba(0,255,135,0.2);
+    }
+
+    .team-card:hover:not(.picked)::before { opacity: 1; }
+
+    .team-card.host {
+      border-color: var(--gold);
+    }
+    .team-card.host:hover:not(.picked) {
+      box-shadow: 0 8px 30px rgba(255,215,0,0.25);
+    }
+
+    .team-card.eliminated {
+      border-color: var(--red);
+      opacity: 0.65;
+    }
+
+    .team-card.eliminated .team-flag { filter: grayscale(0.7); }
+
+    .eliminated-badge {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      background: var(--red);
+      color: #fff;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+
+    .host-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--gold);
+      color: #000;
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+
+    .score-card.eliminated-pick { opacity: 0.55; }
+    .score-card.eliminated-pick .score-team::after { content: ' ❌'; }
+
+    .team-flag { font-size: 2.8rem; display: block; margin-bottom: 10px; }
+    .team-name { font-size: 0.85rem; font-weight: 700; color: var(--text); line-height: 1.2; }
+    .team-confederation { font-size: 0.7rem; color: var(--muted); margin-top: 4px; letter-spacing: 1px; }
+    .team-picked-by { font-size: 0.75rem; color: var(--red); margin-top: 6px; font-weight: 600; }
+
+    /* ── WINNER OVERLAY ── */
+    .winner-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .winner-overlay.show { display: flex; }
+
+    .winner-card {
+      background: linear-gradient(135deg, #0a1a0a, #001a00);
+      border: 2px solid var(--gold);
+      border-radius: 24px;
+      padding: 60px 40px;
+      box-shadow: 0 0 100px rgba(255,215,0,0.3);
+      animation: winner-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes winner-pop {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .winner-flag { font-size: 6rem; margin-bottom: 20px; }
+    .winner-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 6vw, 4rem);
+      color: var(--gold);
+      letter-spacing: 4px;
+      text-shadow: 0 0 40px rgba(255,215,0,0.6);
+    }
+    .winner-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 10vw, 6rem);
+      color: #fff;
+      line-height: 1;
+    }
+    .winner-team { color: var(--green); font-size: 1.1rem; margin-top: 8px; }
+    .winner-close {
+      margin-top: 30px;
+      padding: 14px 40px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+    }
+
+    /* ── ADMIN PANEL ── */
+    .admin-toggle {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #111;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 1.3rem;
+      cursor: pointer;
+      z-index: 100;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-toggle:hover { border-color: var(--gold); color: var(--gold); }
+
+    .admin-panel {
+      display: none;
+      position: fixed;
+      bottom: 84px;
+      right: 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--gold);
+      border-radius: 16px;
+      padding: 24px;
+      width: 320px;
+      z-index: 100;
+      box-shadow: 0 0 40px rgba(255,215,0,0.15);
+    }
+    .admin-panel.open { display: block; }
+
+    .admin-panel h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.3rem;
+      color: var(--gold);
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+    }
+
+    .admin-input {
+      width: 100%;
+      margin-bottom: 10px;
+      background: #0d160d;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+    }
+    .admin-input:focus { border-color: var(--gold); }
+
+    .admin-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--gold);
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      letter-spacing: 2px;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+
+    .admin-btn.delete-btn {
+      background: transparent;
+      border: 1px solid var(--red);
+      color: var(--red);
+      margin-top: 8px;
+    }
+
+    .admin-msg {
+      font-size: 0.8rem;
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    /* ── CONFETTI ── */
+    .confetti-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 900;
+      overflow: hidden;
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      top: -20px;
+      animation: confetti-fall linear forwards;
+    }
+
+    @keyframes confetti-fall {
+      to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* ── SCOREBOARD ── */
+    .scoreboard-section {
+      max-width: 1000px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scoreboard-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--green);
+      letter-spacing: 3px;
+      margin-bottom: 16px;
+    }
+
+    .scoreboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+
+    .score-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .score-card .rank {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      color: var(--muted);
+      min-width: 28px;
+    }
+
+    .score-card.last-pick { border-color: var(--gold); background: rgba(255,215,0,0.05); }
+    .score-card.last-pick .rank { color: var(--gold); }
+    .score-card.still-in { border-color: var(--green); background: rgba(0,255,135,0.05); }
+    .score-card.still-in .rank { color: var(--green); }
+
+    .score-flag { font-size: 1.6rem; }
+    .score-info { flex: 1; }
+    .score-cousin { font-weight: 700; font-size: 0.9rem; }
+    .score-team { font-size: 0.75rem; color: var(--muted); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      .team-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+      .stats-bar { gap: 20px; }
+      .admin-panel { width: calc(100vw - 48px); right: 0; left: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- CONFETTI -->
+<div class="confetti-container" id="confetti"></div>
+
+<!-- WINNER OVERLAY -->
+<div class="winner-overlay" id="winnerOverlay">
+  <div class="winner-card">
+    <div class="winner-flag" id="winnerFlag">🏆</div>
+    <div class="winner-title">LAST TEAM STANDING!</div>
+    <div class="winner-name" id="winnerName">???</div>
+    <div class="winner-team" id="winnerTeam"></div>
+    <button class="winner-close" onclick="closeWinner()">CHAMPION! 🏆🎉</button>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="trophy-row">🏆 ⚽ 🏆</div>
+  <h1>FIFA 2026</h1>
+  <div class="subtitle">⚡ Last Team Standing — Cousin Edition ⚡</div>
+</header>
+
+<!-- LAST PICK BANNER -->
+<div class="last-pick-banner">
+  🏆 LAST TEAM STANDING WINS THE BRAGGING RIGHTS 🏆
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat">
+    <div class="stat-number" id="statPicked">0</div>
+    <div class="stat-label">Teams Picked</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number" id="statLeft">48</div>
+    <div class="stat-label">Remaining</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number" id="statLast">—</div>
+    <div class="stat-label">Still In 🏆</div>
+  </div>
+</div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-wrap">
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 48 teams claimed</div>
+</div>
+
+<!-- PICK FORM -->
+<div class="pick-section">
+  <div class="pick-card">
+    <h2>⚽ Claim Your Team</h2>
+    <div class="form-row">
+      <input type="text" id="cousinName" placeholder="Your name, cousin 😎" maxlength="30" />
+    </div>
+    <div class="form-row">
+      <select id="teamSelect">
+        <option value="">🌍 Select your team...</option>
+      </select>
+    </div>
+    <button class="pick-btn" onclick="submitPick()">
+      ⚡ LOCK IT IN ⚡
+    </button>
+    <div class="toast" id="toast"></div>
+  </div>
+</div>
+
+<!-- LIVE FEED -->
+<div class="live-feed-wrap">
+  <div class="live-feed-title">
+    <div class="live-dot"></div>
+    LIVE PICKS FEED
+  </div>
+  <div class="feed-list" id="feedList">
+    <div class="feed-item" style="color:var(--muted);justify-content:center;">No picks yet — be the first! 😤</div>
+  </div>
+</div>
+
+<!-- SCOREBOARD -->
+<div class="scoreboard-section">
+  <div class="scoreboard-title">📋 THE BOARD</div>
+  <div class="scoreboard-grid" id="scoreboardGrid">
+    <div style="color:var(--muted);font-size:0.9rem;padding:10px;">Waiting for picks...</div>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Filter:</span>
+  <button class="filter-btn active" onclick="filterTeams('ALL', this)">All Teams</button>
+  <button class="filter-btn" onclick="filterTeams('HOST', this)">🏠 Hosts</button>
+  <button class="filter-btn" onclick="filterTeams('UEFA', this)">🇪🇺 UEFA</button>
+  <button class="filter-btn" onclick="filterTeams('CONMEBOL', this)">🌎 CONMEBOL</button>
+  <button class="filter-btn" onclick="filterTeams('CAF', this)">🌍 CAF</button>
+  <button class="filter-btn" onclick="filterTeams('AFC', this)">🌏 AFC</button>
+  <button class="filter-btn" onclick="filterTeams('CONCACAF', this)">🗽 CONCACAF</button>
+  <button class="filter-btn" onclick="filterTeams('AVAILABLE', this)">✅ Available</button>
+</div>
+
+<!-- TEAM GRID -->
+<div class="team-grid" id="teamGrid"></div>
+
+<!-- ADMIN TOGGLE -->
+<button class="admin-toggle" onclick="toggleAdmin()" title="Admin Panel">⚙️</button>
+
+<!-- ADMIN PANEL -->
+<div class="admin-panel" id="adminPanel">
+  <h3>⚙️ Admin Panel</h3>
+  <input class="admin-input" type="password" id="adminPass" placeholder="🔐 Admin password" />
+  <input class="admin-input" type="text" id="adminCousin" placeholder="Cousin's name" />
+  <select class="admin-input" id="adminTeam">
+    <option value="">Select new team...</option>
+  </select>
+  <button class="admin-btn" onclick="adminUpdate()">UPDATE TEAM</button>
+  <button class="admin-btn delete-btn" onclick="adminDelete()">REMOVE PICK</button>
+  <div class="admin-msg" id="adminMsg"></div>
+
+  <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--red);letter-spacing:2px;margin-bottom:10px;">⚔️ Eliminate / Restore</div>
+    <select class="admin-input" id="adminEliminateTeam">
+      <option value="">Select team...</option>
+    </select>
+    <button class="admin-btn" style="background:var(--red);color:#fff;border:none;" onclick="adminEliminate()">ELIMINATE TEAM</button>
+    <button class="admin-btn delete-btn" onclick="adminRestore()">RESTORE TEAM</button>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  let allTeams = [];
+  let allPicks = [];
+  let currentFilter = 'ALL';
+
+  const TOTAL = 48;
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  async function init() {
+    const [teamsRes, picksRes] = await Promise.all([
+      fetch('/api/teams').then(r => r.json()),
+      fetch('/api/picks').then(r => r.json())
+    ]);
+    allTeams = teamsRes.teams;
+    allPicks = picksRes;
+    renderAll();
+    populateAdminTeamSelect();
+    populateEliminateTeamSelect();
+  }
+
+  function renderAll() {
+    renderTeams();
+    renderStats();
+    renderFeed();
+    renderScoreboard();
+    populatePickSelect();
+  }
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
+  function renderStats() {
+    const picked = allTeams.filter(t => t.isPicked).length;
+    const left = TOTAL - picked;
+    document.getElementById('statPicked').textContent = picked;
+    document.getElementById('statLeft').textContent = left;
+    const aliveCount = allPicks.filter(p => {
+      const team = allTeams.find(t => t.code === p.teamCode);
+      return team && !team.isEliminated;
+    }).length;
+    document.getElementById('statLast').textContent = aliveCount > 0 ? aliveCount : '—';
+    const pct = (picked / TOTAL) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = `${picked} / ${TOTAL} teams claimed`;
+  }
+
+  // ── Team Grid ─────────────────────────────────────────────────────────────
+  function renderTeams() {
+    const grid = document.getElementById('teamGrid');
+    let filtered = currentFilter === 'ALL' ? allTeams
+      : currentFilter === 'AVAILABLE' ? allTeams.filter(t => !t.isPicked)
+      : currentFilter === 'HOST' ? allTeams.filter(t => t.group === 'HOST')
+      : allTeams.filter(t => t.confederation === currentFilter);
+
+    grid.innerHTML = filtered.map(team => `
+      <div class="team-card ${team.isEliminated ? 'eliminated' : ''} ${team.group === 'HOST' ? 'host' : ''}"
+           onclick="selectTeam('${team.code}')"
+           title="Click to select ${team.name}">
+        ${team.group === 'HOST' ? '<div class="host-badge">HOST</div>' : ''}
+        ${team.isEliminated ? '<div class="eliminated-badge">OUT</div>' : ''}
+        <span class="team-flag">${team.flag}</span>
+        <div class="team-name">${team.name}</div>
+        <div class="team-confederation">${team.confederation}</div>
+        ${team.pickers && team.pickers.length ? `<div class="team-picked-by">${team.pickers.map(n => '👤 ' + n).join('<br>')}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  function filterTeams(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTeams();
+  }
+
+  function selectTeam(code) {
+    document.getElementById('teamSelect').value = code;
+    document.getElementById('teamSelect').focus();
+    document.getElementById('cousinName').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ── Select dropdown ───────────────────────────────────────────────────────
+  function populatePickSelect() {
+    const sel = document.getElementById('teamSelect');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">🌍 Select your team...</option>';
+    allTeams.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.code;
+      let label = `${t.flag} ${t.name}`;
+      if (t.pickers && t.pickers.length) label += ` (${t.pickers.join(', ')})`;
+      if (t.isEliminated) label += ' [OUT]';
+      opt.textContent = label;
+      sel.appendChild(opt);
+    });
+    sel.value = current;
+  }
+
+  function populateAdminTeamSelect() {
+    const sel = document.getElementById('adminTeam');
+    sel.innerHTML = '<option value="">Select new team...</option>';
+    allTeams.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.code;
+      opt.textContent = `${t.flag} ${t.name} ${t.isPicked ? '(taken)' : ''}`;
+      sel.appendChild(opt);
+    });
+  }
+
+  // ── Submit Pick ───────────────────────────────────────────────────────────
+  async function submitPick() {
+    const cousinName = document.getElementById('cousinName').value.trim();
+    const teamCode = document.getElementById('teamSelect').value;
+    const toast = document.getElementById('toast');
+
+    if (!cousinName) return showToast('Enter your name first! 😤', 'error');
+    if (!teamCode) return showToast('Pick a team! 🌍', 'error');
+
+    const res = await fetch('/api/pick', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cousinName, teamCode })
+    });
+    const data = await res.json();
+
+    if (!res.ok) return showToast(data.error, 'error');
+
+    const team = allTeams.find(t => t.code === teamCode);
+    showToast(`${team.flag} ${team.name} is YOURS, ${cousinName}! 🎉`, 'success');
+    launchConfetti();
+    document.getElementById('cousinName').value = '';
+    document.getElementById('teamSelect').value = '';
+  }
+
+  // ── Feed ──────────────────────────────────────────────────────────────────
+  function renderFeed() {
+    const list = document.getElementById('feedList');
+    if (allPicks.length === 0) {
+      list.innerHTML = '<div class="feed-item" style="color:var(--muted);justify-content:center;">No picks yet — be the first! 😤</div>';
+      return;
+    }
+    list.innerHTML = allPicks.slice(0, 20).map(p => `
+      <div class="feed-item">
+        <span class="flag">${p.teamFlag}</span>
+        <span><span class="feed-name">${p.cousinName}</span> locked in ${p.teamName}</span>
+        <span class="feed-time">${timeAgo(p.pickedAt)}</span>
+      </div>
+    `).join('');
+  }
+
+  function prependFeedItem(data) {
+    const list = document.getElementById('feedList');
+    const empty = list.querySelector('[style*="muted"]');
+    if (empty) empty.remove();
+    const item = document.createElement('div');
+    item.className = 'feed-item';
+    item.innerHTML = `
+      <span class="flag">${data.teamFlag}</span>
+      <span><span class="feed-name">${data.cousinName}</span> locked in ${data.teamName}</span>
+      <span class="feed-time">just now</span>
+    `;
+    list.prepend(item);
+  }
+
+  // ── Scoreboard ────────────────────────────────────────────────────────────
+  function renderScoreboard() {
+    const grid = document.getElementById('scoreboardGrid');
+    if (allPicks.length === 0) {
+      grid.innerHTML = '<div style="color:var(--muted);font-size:0.9rem;padding:10px;">Waiting for picks...</div>';
+      return;
+    }
+    const sorted = [...allPicks].sort((a, b) => {
+      const aOut = allTeams.find(t => t.code === a.teamCode)?.isEliminated ? 1 : 0;
+      const bOut = allTeams.find(t => t.code === b.teamCode)?.isEliminated ? 1 : 0;
+      return aOut !== bOut ? aOut - bOut : new Date(b.pickedAt) - new Date(a.pickedAt);
+    });
+    const alivePicks = sorted.filter(p => !allTeams.find(t => t.code === p.teamCode)?.isEliminated);
+    grid.innerHTML = sorted.map((p, i) => {
+      const eliminated = allTeams.find(t => t.code === p.teamCode)?.isEliminated;
+      const isWinner = alivePicks.length === 1 && !eliminated && allTeams.some(t => t.isEliminated);
+      return `
+      <div class="score-card ${isWinner ? 'last-pick' : ''} ${!eliminated ? 'still-in' : 'eliminated-pick'}">
+        <div class="rank">${isWinner ? '🏆' : eliminated ? '❌' : '✅'}</div>
+        <div class="score-flag">${p.teamFlag}</div>
+        <div class="score-info">
+          <div class="score-cousin">${p.cousinName}</div>
+          <div class="score-team">${p.teamName}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Socket events ─────────────────────────────────────────────────────────
+  socket.on('new_pick', async (data) => {
+    const res = await fetch('/api/teams').then(r => r.json());
+    allTeams = res.teams;
+    allPicks.unshift({ cousinName: data.cousinName, teamCode: data.teamCode, teamName: data.teamName, teamFlag: data.teamFlag, pickedAt: data.pickedAt });
+    renderTeams();
+    renderStats();
+    prependFeedItem(data);
+    renderScoreboard();
+    populatePickSelect();
+    populateAdminTeamSelect();
+    populateEliminateTeamSelect();
+  });
+
+  socket.on('pick_updated', async () => { await refreshData(); });
+  socket.on('pick_deleted', async () => { await refreshData(); });
+  socket.on('team_eliminated', async () => { await refreshData(); checkAndShowWinner(); });
+  socket.on('team_restored', async () => { await refreshData(); });
+
+  async function refreshData() {
+    const [teamsRes, picksRes] = await Promise.all([
+      fetch('/api/teams').then(r => r.json()),
+      fetch('/api/picks').then(r => r.json())
+    ]);
+    allTeams = teamsRes.teams;
+    allPicks = picksRes;
+    renderAll();
+    populateAdminTeamSelect();
+    populateEliminateTeamSelect();
+  }
+
+  // ── Admin ─────────────────────────────────────────────────────────────────
+  function toggleAdmin() {
+    document.getElementById('adminPanel').classList.toggle('open');
+  }
+
+  async function adminUpdate() {
+    const password = document.getElementById('adminPass').value;
+    const cousinName = document.getElementById('adminCousin').value.trim();
+    const newTeamCode = document.getElementById('adminTeam').value;
+    if (!password || !cousinName || !newTeamCode) return showAdminMsg('Fill all fields!', 'error');
+
+    const res = await fetch('/api/admin/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, cousinName, newTeamCode })
+    });
+    const data = await res.json();
+    showAdminMsg(data.message || data.error, res.ok ? 'success' : 'error');
+  }
+
+  async function adminDelete() {
+    const password = document.getElementById('adminPass').value;
+    const cousinName = document.getElementById('adminCousin').value.trim();
+    if (!password || !cousinName) return showAdminMsg('Enter password & cousin name', 'error');
+
+    const res = await fetch('/api/admin/delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, cousinName })
+    });
+    const data = await res.json();
+    showAdminMsg(data.message || data.error, res.ok ? 'success' : 'error');
+  }
+
+  function populateEliminateTeamSelect() {
+    const sel = document.getElementById('adminEliminateTeam');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Select team...</option>';
+    allTeams.forEach(t => {
+      const opt = document.createElement('option');
+      opt.value = t.code;
+      opt.textContent = `${t.flag} ${t.name}${t.isEliminated ? ' (OUT)' : ''}`;
+      sel.appendChild(opt);
+    });
+    sel.value = current;
+  }
+
+  async function adminEliminate() {
+    const password = document.getElementById('adminPass').value;
+    const teamCode = document.getElementById('adminEliminateTeam').value;
+    if (!password || !teamCode) return showAdminMsg('Enter password & select a team', 'error');
+
+    const res = await fetch('/api/admin/eliminate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, teamCode })
+    });
+    const data = await res.json();
+    showAdminMsg(data.message || data.error, res.ok ? 'success' : 'error');
+  }
+
+  async function adminRestore() {
+    const password = document.getElementById('adminPass').value;
+    const teamCode = document.getElementById('adminEliminateTeam').value;
+    if (!password || !teamCode) return showAdminMsg('Enter password & select a team', 'error');
+
+    const res = await fetch('/api/admin/restore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password, teamCode })
+    });
+    const data = await res.json();
+    showAdminMsg(data.message || data.error, res.ok ? 'success' : 'error');
+  }
+
+  function showAdminMsg(msg, type) {
+    const el = document.getElementById('adminMsg');
+    el.style.display = 'block';
+    el.style.background = type === 'success' ? 'rgba(0,255,135,0.1)' : 'rgba(255,59,59,0.1)';
+    el.style.border = `1px solid ${type === 'success' ? 'var(--green)' : 'var(--red)'}`;
+    el.style.color = type === 'success' ? 'var(--green)' : 'var(--red)';
+    el.textContent = msg;
+  }
+
+  // ── Helpers ───────────────────────────────────────────────────────────────
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = `toast ${type}`;
+    t.style.display = 'block';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.style.display = 'none', 4000);
+  }
+
+  function timeAgo(date) {
+    const s = Math.floor((Date.now() - new Date(date)) / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s/60)}m ago`;
+    return `${Math.floor(s/3600)}h ago`;
+  }
+
+  function closeWinner() {
+    document.getElementById('winnerOverlay').classList.remove('show');
+  }
+
+  function launchConfetti(count = 80) {
+    const container = document.getElementById('confetti');
+    const colors = ['#00ff87','#ffd700','#ff3b3b','#ffffff','#00bfff','#ff69b4'];
+    const shapes = ['■', '●', '▲', '★', '⚽'];
+
+    for (let i = 0; i < count; i++) {
+      const el = document.createElement('div');
+      el.className = 'confetti-piece';
+      el.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+      el.style.cssText = `
+        left: ${Math.random() * 100}vw;
+        color: ${colors[Math.floor(Math.random() * colors.length)]};
+        font-size: ${8 + Math.random() * 14}px;
+        animation-duration: ${1.5 + Math.random() * 2}s;
+        animation-delay: ${Math.random() * 0.5}s;
+      `;
+      container.appendChild(el);
+      el.addEventListener('animationend', () => el.remove());
+    }
+  }
+
+  function checkAndShowWinner() {
+    const anyEliminated = allTeams.some(t => t.isEliminated);
+    if (!anyEliminated) return;
+    const alivePicks = allPicks.filter(p => !allTeams.find(t => t.code === p.teamCode)?.isEliminated);
+    if (alivePicks.length === 1) {
+      const winner = alivePicks[0];
+      document.getElementById('winnerFlag').textContent = winner.teamFlag;
+      document.getElementById('winnerName').textContent = winner.cousinName;
+      document.getElementById('winnerTeam').textContent = `${winner.teamName} is the last team standing! 🏆`;
+      document.getElementById('winnerOverlay').classList.add('show');
+      launchConfetti(200);
+    }
+  }
+
+  init();
+</script>
+</body>
+</html>
