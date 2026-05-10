@@ -800,12 +800,11 @@
   </div>
 </div>
 
-<script src="/socket.io/socket.io.js"></script>
 <script>
-  const socket = io();
   let allTeams = [];
   let allPicks = [];
   let currentFilter = 'ALL';
+  let lastEliminatedCount = 0;
 
   const TOTAL = 48;
 
@@ -817,9 +816,11 @@
     ]);
     allTeams = teamsRes.teams;
     allPicks = picksRes;
+    lastEliminatedCount = allTeams.filter(t => t.isEliminated).length;
     renderAll();
     populateAdminTeamSelect();
     populateEliminateTeamSelect();
+    setInterval(pollData, 4000);
   }
 
   function renderAll() {
@@ -993,34 +994,35 @@
   }
 
   // ── Socket events ─────────────────────────────────────────────────────────
-  socket.on('new_pick', async (data) => {
-    const res = await fetch('/api/teams').then(r => r.json());
-    allTeams = res.teams;
-    allPicks.unshift({ cousinName: data.cousinName, teamCode: data.teamCode, teamName: data.teamName, teamFlag: data.teamFlag, pickedAt: data.pickedAt });
-    renderTeams();
-    renderStats();
-    prependFeedItem(data);
-    renderScoreboard();
-    populatePickSelect();
-    populateAdminTeamSelect();
-    populateEliminateTeamSelect();
-  });
-
-  socket.on('pick_updated', async () => { await refreshData(); });
-  socket.on('pick_deleted', async () => { await refreshData(); });
-  socket.on('team_eliminated', async () => { await refreshData(); checkAndShowWinner(); });
-  socket.on('team_restored', async () => { await refreshData(); });
-
-  async function refreshData() {
+  async function pollData() {
     const [teamsRes, picksRes] = await Promise.all([
       fetch('/api/teams').then(r => r.json()),
       fetch('/api/picks').then(r => r.json())
     ]);
     allTeams = teamsRes.teams;
     allPicks = picksRes;
+    const currentCount = allTeams.filter(t => t.isEliminated).length;
+    const newElimination = currentCount > lastEliminatedCount;
+    lastEliminatedCount = currentCount;
     renderAll();
     populateAdminTeamSelect();
     populateEliminateTeamSelect();
+    if (newElimination) checkAndShowWinner();
+  }
+
+  async function refreshData() {
+    const [teamsRes, picksRes] = await Promise.all([
+      fetch('/api/teams').then(r => r.json()),
+      fetch('/api/picks').then(r => r.json())
+    ]);
+    const prevCount = lastEliminatedCount;
+    allTeams = teamsRes.teams;
+    allPicks = picksRes;
+    lastEliminatedCount = allTeams.filter(t => t.isEliminated).length;
+    renderAll();
+    populateAdminTeamSelect();
+    populateEliminateTeamSelect();
+    if (lastEliminatedCount > prevCount) checkAndShowWinner();
   }
 
   // ── Admin ─────────────────────────────────────────────────────────────────

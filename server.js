@@ -1,7 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const path = require('path');
@@ -10,8 +8,6 @@ const Pick = require('./models/Pick');
 const Elimination = require('./models/Elimination');
 
 const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -21,28 +17,23 @@ const ADMIN_HASH = bcrypt.hashSync(process.env.ADMIN_PASSWORD || 'goat2026', 10)
 mongoose.connect(process.env.MONGODB_URI)
   .then(async () => {
     console.log('MongoDB connected');
-    // Drop the old unique index on teamCode so multiple cousins can pick the same team
     try {
       await Pick.collection.dropIndex('teamCode_1');
-      console.log('Dropped teamCode unique index');
     } catch (_) {}
   })
   .catch(err => console.error('MongoDB error:', err));
 
 // ── Teams data ──────────────────────────────────────────────────────────────
 const TEAMS = [
-  // Host nations (glowing)
   { code: 'USA', name: 'United States', flag: '🇺🇸', group: 'HOST', confederation: 'CONCACAF' },
   { code: 'CAN', name: 'Canada', flag: '🇨🇦', group: 'HOST', confederation: 'CONCACAF' },
   { code: 'MEX', name: 'Mexico', flag: '🇲🇽', group: 'HOST', confederation: 'CONCACAF' },
-  // CONMEBOL
   { code: 'ARG', name: 'Argentina', flag: '🇦🇷', confederation: 'CONMEBOL' },
   { code: 'BRA', name: 'Brazil', flag: '🇧🇷', confederation: 'CONMEBOL' },
   { code: 'URU', name: 'Uruguay', flag: '🇺🇾', confederation: 'CONMEBOL' },
   { code: 'COL', name: 'Colombia', flag: '🇨🇴', confederation: 'CONMEBOL' },
   { code: 'ECU', name: 'Ecuador', flag: '🇪🇨', confederation: 'CONMEBOL' },
   { code: 'VEN', name: 'Venezuela', flag: '🇻🇪', confederation: 'CONMEBOL' },
-  // UEFA
   { code: 'FRA', name: 'France', flag: '🇫🇷', confederation: 'UEFA' },
   { code: 'ESP', name: 'Spain', flag: '🇪🇸', confederation: 'UEFA' },
   { code: 'GER', name: 'Germany', flag: '🇩🇪', confederation: 'UEFA' },
@@ -61,7 +52,6 @@ const TEAMS = [
   { code: 'DEN', name: 'Denmark', flag: '🇩🇰', confederation: 'UEFA' },
   { code: 'POL', name: 'Poland', flag: '🇵🇱', confederation: 'UEFA' },
   { code: 'HUN', name: 'Hungary', flag: '🇭🇺', confederation: 'UEFA' },
-  // CAF
   { code: 'MAR', name: 'Morocco', flag: '🇲🇦', confederation: 'CAF' },
   { code: 'SEN', name: 'Senegal', flag: '🇸🇳', confederation: 'CAF' },
   { code: 'NGA', name: 'Nigeria', flag: '🇳🇬', confederation: 'CAF' },
@@ -71,7 +61,6 @@ const TEAMS = [
   { code: 'CIV', name: "Côte d'Ivoire", flag: '🇨🇮', confederation: 'CAF' },
   { code: 'TUN', name: 'Tunisia', flag: '🇹🇳', confederation: 'CAF' },
   { code: 'ALG', name: 'Algeria', flag: '🇩🇿', confederation: 'CAF' },
-  // AFC
   { code: 'JPN', name: 'Japan', flag: '🇯🇵', confederation: 'AFC' },
   { code: 'KOR', name: 'South Korea', flag: '🇰🇷', confederation: 'AFC' },
   { code: 'IRN', name: 'Iran', flag: '🇮🇷', confederation: 'AFC' },
@@ -80,11 +69,9 @@ const TEAMS = [
   { code: 'QAT', name: 'Qatar', flag: '🇶🇦', confederation: 'AFC' },
   { code: 'IRQ', name: 'Iraq', flag: '🇮🇶', confederation: 'AFC' },
   { code: 'UZB', name: 'Uzbekistan', flag: '🇺🇿', confederation: 'AFC' },
-  // CONCACAF
   { code: 'PAN', name: 'Panama', flag: '🇵🇦', confederation: 'CONCACAF' },
   { code: 'CRC', name: 'Costa Rica', flag: '🇨🇷', confederation: 'CONCACAF' },
   { code: 'HON', name: 'Honduras', flag: '🇭🇳', confederation: 'CONCACAF' },
-  // OFC
   { code: 'NZL', name: 'New Zealand', flag: '🇳🇿', confederation: 'OFC' },
 ];
 
@@ -133,10 +120,7 @@ app.post('/api/pick', async (req, res) => {
   await pick.save();
 
   const totalPicks = await Pick.countDocuments();
-  const payload = { cousinName, teamCode, teamName: team.name, teamFlag: team.flag, pickedAt: pick.pickedAt, totalPicks };
-  io.emit('new_pick', payload);
-
-  res.json({ success: true, ...payload });
+  res.json({ success: true, cousinName, teamCode, teamName: team.name, teamFlag: team.flag, pickedAt: pick.pickedAt, totalPicks });
 });
 
 app.post('/api/admin/update', async (req, res) => {
@@ -156,7 +140,6 @@ app.post('/api/admin/update', async (req, res) => {
   pick.pickedAt = new Date();
   await pick.save();
 
-  io.emit('pick_updated', { cousinName, oldTeam, newTeam: team.name, newFlag: team.flag });
   res.json({ success: true, message: `${cousinName}'s team changed from ${oldTeam} to ${team.name}` });
 });
 
@@ -167,7 +150,6 @@ app.post('/api/admin/delete', async (req, res) => {
   const result = await Pick.deleteOne({ cousinName: { $regex: new RegExp(`^${cousinName}$`, 'i') } });
   if (result.deletedCount === 0) return res.status(404).json({ error: 'Cousin not found' });
 
-  io.emit('pick_deleted', { cousinName });
   res.json({ success: true, message: `${cousinName}'s pick removed` });
 });
 
@@ -184,7 +166,6 @@ app.post('/api/admin/eliminate', async (req, res) => {
     { upsert: true, new: true }
   );
 
-  io.emit('team_eliminated', { teamCode, teamName: team.name, teamFlag: team.flag });
   res.json({ success: true, message: `${team.flag} ${team.name} eliminated` });
 });
 
@@ -197,17 +178,12 @@ app.post('/api/admin/restore', async (req, res) => {
 
   await Elimination.deleteOne({ teamCode });
 
-  io.emit('team_restored', { teamCode, teamName: team.name });
   res.json({ success: true, message: `${team.flag} ${team.name} restored` });
 });
 
 app.get('/api/teams-data', (req, res) => res.json(TEAMS));
 
-// ── Socket.io ────────────────────────────────────────────────────────────────
-io.on('connection', (socket) => {
-  console.log('⚽ A cousin connected:', socket.id);
-  socket.on('disconnect', () => console.log('💔 Cousin left:', socket.id));
-});
-
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => console.log(`\n⚽ FIFA Cousins 2026 running at http://localhost:${PORT}\n`));
+app.listen(PORT, () => console.log(`\n⚽ FIFA Cousins 2026 running at http://localhost:${PORT}\n`));
+
+module.exports = app;
