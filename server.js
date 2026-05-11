@@ -151,13 +151,20 @@ app.get('/api/leaderboard', async (req, res) => {
   ]);
   const eliminatedCodes = new Set(eliminations.map(e => e.teamCode));
   const leaderboard = picks.map(p => ({
-    memberName: p.cousinName,
-    teamCode:   p.teamCode,
-    teamName:   p.teamName,
-    teamFlag:   p.teamFlag,
-    points:     calcPoints(matches, p.teamCode),
+    memberName:   p.cousinName,
+    teamCode:     p.teamCode,
+    teamName:     p.teamName,
+    teamFlag:     p.teamFlag,
+    points:       calcPoints(matches, p.teamCode),
     isEliminated: eliminatedCodes.has(p.teamCode)
   })).sort((a, b) => b.points - a.points || (a.isEliminated ? 1 : -1));
+
+  // Standard competition ranking: tied players share the same rank,
+  // next rank skips (e.g. two at #1 → next is #3)
+  leaderboard.forEach(entry => {
+    entry.rank = leaderboard.filter(e => e.points > entry.points).length + 1;
+  });
+
   res.json(leaderboard);
 });
 

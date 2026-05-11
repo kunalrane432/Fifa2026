@@ -1258,11 +1258,11 @@
       list.innerHTML = '<div style="color:var(--muted);font-size:0.9rem;padding:10px;">Tournament hasn\'t started yet — leaderboard will update once matches begin.</div>';
       return;
     }
-    const medals = ['🥇', '🥈', '🥉'];
-    const tierClass = ['lb-gold', 'lb-silver', 'lb-bronze'];
-    list.innerHTML = data.map((e, i) => `
-      <div class="lb-card ${tierClass[i] || ''} ${e.isEliminated ? 'lb-out' : ''}">
-        <div class="lb-rank">${medals[i] || '#' + (i + 1)}</div>
+    const medalFor  = r => r === 1 ? '🥇' : r === 2 ? '🥈' : r === 3 ? '🥉' : '#' + r;
+    const tierFor   = r => r === 1 ? 'lb-gold' : r === 2 ? 'lb-silver' : r === 3 ? 'lb-bronze' : '';
+    list.innerHTML = data.map(e => `
+      <div class="lb-card ${tierFor(e.rank)} ${e.isEliminated ? 'lb-out' : ''}">
+        <div class="lb-rank">${medalFor(e.rank)}</div>
         <div class="lb-flag">${e.teamFlag}</div>
         <div class="lb-info">
           <div class="lb-name">${e.memberName}</div>
