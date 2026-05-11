@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>⚽ FIFA 2026 — Last Pick Wins!</title>
+  <title>⚽ FIFA 2026 — Family Edition</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'><text y='32' font-size='32'>⚽</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
@@ -534,6 +534,8 @@
       border-radius: 16px;
       padding: 24px;
       width: 320px;
+      max-height: 80vh;
+      overflow-y: auto;
       z-index: 100;
       box-shadow: 0 0 40px rgba(255,215,0,0.15);
     }
@@ -661,6 +663,77 @@
     .score-cousin { font-weight: 700; font-size: 0.9rem; }
     .score-team { font-size: 0.75rem; color: var(--muted); }
 
+    /* ── LEADERBOARD ── */
+    .leaderboard-section {
+      max-width: 800px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .leaderboard-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--gold);
+      letter-spacing: 3px;
+      margin-bottom: 6px;
+    }
+
+    .leaderboard-subtitle {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .lb-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .lb-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: border-color 0.2s;
+    }
+
+    .lb-card.lb-gold   { border-color: var(--gold); background: rgba(255,215,0,0.06); }
+    .lb-card.lb-silver { border-color: #a8a8a8; background: rgba(168,168,168,0.04); }
+    .lb-card.lb-bronze { border-color: #cd7f32; background: rgba(205,127,50,0.04); }
+    .lb-card.lb-out    { opacity: 0.45; }
+
+    .lb-rank {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      min-width: 36px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .lb-flag  { font-size: 1.8rem; }
+    .lb-info  { flex: 1; min-width: 0; }
+    .lb-name  { font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .lb-team  { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    .lb-pts-wrap { text-align: right; }
+    .lb-pts {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      color: var(--green);
+      line-height: 1;
+    }
+    .lb-pts-label { font-size: 0.6rem; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+    .lb-breakdown {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 2px;
+      letter-spacing: 0.5px;
+    }
+
     /* ── MOBILE ── */
     @media (max-width: 600px) {
       .team-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
@@ -689,7 +762,7 @@
 <header>
   <div class="trophy-row">🏆 ⚽ 🏆</div>
   <h1>FIFA 2026</h1>
-  <div class="subtitle">⚡ Last Team Standing — Cousin Edition ⚡</div>
+  <div class="subtitle">⚡ Last Team Standing — Family Edition ⚡</div>
 </header>
 
 <!-- LAST PICK BANNER -->
@@ -726,7 +799,7 @@
   <div class="pick-card">
     <h2>⚽ Claim Your Team</h2>
     <div class="form-row">
-      <input type="text" id="cousinName" placeholder="Your name, cousin 😎" maxlength="30" />
+      <input type="text" id="cousinName" placeholder="Your name 😎" maxlength="30" />
     </div>
     <div class="form-row">
       <select id="teamSelect">
@@ -759,6 +832,15 @@
   </div>
 </div>
 
+<!-- LEADERBOARD -->
+<div class="leaderboard-section">
+  <div class="leaderboard-title">🏆 LEADERBOARD</div>
+  <div class="leaderboard-subtitle">WIN=10 PTS &nbsp;·&nbsp; WIN BY 3+=15 PTS &nbsp;·&nbsp; DRAW=5 PTS</div>
+  <div class="lb-list" id="leaderboardList">
+    <div style="color:var(--muted);font-size:0.9rem;padding:10px;">Tournament hasn't started yet — leaderboard will update once matches begin.</div>
+  </div>
+</div>
+
 <!-- FILTER BAR -->
 <div class="filter-bar">
   <span class="filter-label">Filter:</span>
@@ -782,13 +864,18 @@
 <div class="admin-panel" id="adminPanel">
   <h3>⚙️ Admin Panel</h3>
   <input class="admin-input" type="password" id="adminPass" placeholder="🔐 Admin password" />
-  <input class="admin-input" type="text" id="adminCousin" placeholder="Cousin's name" />
+  <input class="admin-input" type="text" id="adminCousin" placeholder="Member's name" />
   <select class="admin-input" id="adminTeam">
     <option value="">Select new team...</option>
   </select>
   <button class="admin-btn" onclick="adminUpdate()">UPDATE TEAM</button>
   <button class="admin-btn delete-btn" onclick="adminDelete()">REMOVE PICK</button>
   <div class="admin-msg" id="adminMsg"></div>
+
+  <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--green);letter-spacing:2px;margin-bottom:10px;">📡 Sync Match Data</div>
+    <button class="admin-btn" style="background:var(--green);color:#000;border:none;" onclick="adminSyncMatches()">SYNC LATEST SCORES</button>
+  </div>
 
   <div style="border-top:1px solid var(--border);margin-top:16px;padding-top:16px;">
     <div style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--red);letter-spacing:2px;margin-bottom:10px;">⚔️ Eliminate / Restore</div>
@@ -820,7 +907,9 @@
     renderAll();
     populateAdminTeamSelect();
     populateEliminateTeamSelect();
+    await refreshLeaderboard();
     setInterval(pollData, 4000);
+    setInterval(refreshLeaderboard, 30000);
   }
 
   function renderAll() {
@@ -1023,6 +1112,7 @@
     populateAdminTeamSelect();
     populateEliminateTeamSelect();
     if (lastEliminatedCount > prevCount) checkAndShowWinner();
+    await refreshLeaderboard();
   }
 
   // ── Admin ─────────────────────────────────────────────────────────────────
@@ -1149,6 +1239,55 @@
       container.appendChild(el);
       el.addEventListener('animationend', () => el.remove());
     }
+  }
+
+  // ── Leaderboard ───────────────────────────────────────────────────────────
+  async function refreshLeaderboard() {
+    const data = await fetch('/api/leaderboard').then(r => r.json());
+    renderLeaderboard(data);
+  }
+
+  function renderLeaderboard(data) {
+    const list = document.getElementById('leaderboardList');
+    if (!data || !data.length) {
+      list.innerHTML = '<div style="color:var(--muted);font-size:0.9rem;padding:10px;">No picks yet.</div>';
+      return;
+    }
+    const hasPoints = data.some(e => e.points > 0);
+    if (!hasPoints) {
+      list.innerHTML = '<div style="color:var(--muted);font-size:0.9rem;padding:10px;">Tournament hasn\'t started yet — leaderboard will update once matches begin.</div>';
+      return;
+    }
+    const medals = ['🥇', '🥈', '🥉'];
+    const tierClass = ['lb-gold', 'lb-silver', 'lb-bronze'];
+    list.innerHTML = data.map((e, i) => `
+      <div class="lb-card ${tierClass[i] || ''} ${e.isEliminated ? 'lb-out' : ''}">
+        <div class="lb-rank">${medals[i] || '#' + (i + 1)}</div>
+        <div class="lb-flag">${e.teamFlag}</div>
+        <div class="lb-info">
+          <div class="lb-name">${e.memberName}</div>
+          <div class="lb-team">${e.teamName} ${e.isEliminated ? '❌ Eliminated' : '✅ Still In'}</div>
+        </div>
+        <div class="lb-pts-wrap">
+          <div class="lb-pts">${e.points}</div>
+          <div class="lb-pts-label">PTS</div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  async function adminSyncMatches() {
+    const password = document.getElementById('adminPass').value;
+    if (!password) return showAdminMsg('Enter password first', 'error');
+    showAdminMsg('Syncing...', 'success');
+    const res = await fetch('/api/admin/sync-matches', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password })
+    });
+    const data = await res.json();
+    showAdminMsg(data.message || data.error, res.ok ? 'success' : 'error');
+    if (res.ok) await refreshLeaderboard();
   }
 
   function checkAndShowWinner() {
