@@ -734,6 +734,176 @@
       letter-spacing: 0.5px;
     }
 
+    /* ── HOW TO PLAY BUTTON ── */
+    .rules-btn {
+      margin-top: 18px;
+      padding: 10px 30px;
+      background: transparent;
+      border: 1px solid var(--green);
+      color: var(--green);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 3px;
+      cursor: pointer;
+      border-radius: 99px;
+      transition: all 0.2s;
+      position: relative;
+      z-index: 1;
+    }
+    .rules-btn:hover {
+      background: rgba(0,255,135,0.1);
+      box-shadow: 0 0 24px rgba(0,255,135,0.3);
+    }
+
+    /* ── RULES OVERLAY ── */
+    .rules-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 600;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .rules-overlay.show { display: flex; }
+
+    .rules-modal {
+      background: linear-gradient(160deg, #0a1a0a 0%, #000d00 100%);
+      border: 1px solid var(--green);
+      border-radius: 20px;
+      padding: 36px 32px 28px;
+      max-width: 580px;
+      width: 100%;
+      position: relative;
+      animation: winner-pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 0 80px rgba(0,255,135,0.12), 0 0 0 1px rgba(0,255,135,0.08);
+      margin: auto;
+    }
+
+    .rules-close {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .rules-close:hover { border-color: var(--red); color: var(--red); }
+
+    .rules-header { text-align: center; margin-bottom: 26px; }
+    .rules-icon-row { font-size: 2rem; letter-spacing: 8px; margin-bottom: 10px; }
+    .rules-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.2rem, 6vw, 3.2rem);
+      letter-spacing: 5px;
+      background: linear-gradient(135deg, #fff 0%, var(--gold) 45%, var(--green) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+      line-height: 1;
+    }
+    .rules-tagline {
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    /* ── RULE CARDS ── */
+    .rules-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .rule-card {
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      transition: border-color 0.2s;
+    }
+    .rule-card:hover { border-color: rgba(0,255,135,0.25); }
+    .rule-card-gold  { border-color: rgba(255,215,0,0.35); background: rgba(255,215,0,0.03); }
+    .rule-card-gold:hover { border-color: rgba(255,215,0,0.6); }
+
+    .rule-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      color: #000;
+      background: var(--green);
+      min-width: 34px; height: 34px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(0,255,135,0.45);
+    }
+    .rule-num-gold {
+      background: var(--gold);
+      font-size: 1rem;
+      box-shadow: 0 0 14px rgba(255,215,0,0.45);
+    }
+
+    .rule-body { flex: 1; }
+    .rule-heading {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.05rem;
+      color: var(--green);
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+    }
+    .rule-card-gold .rule-heading { color: var(--gold); }
+    .rule-text { font-size: 0.86rem; color: var(--text); line-height: 1.65; }
+    .rule-text strong { color: #fff; }
+
+    /* ── POINTS TABLE ── */
+    .pts-grid { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+    .pts-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 12px; border-radius: 8px; font-size: 0.83rem;
+    }
+    .pts-win-big { background: rgba(255,215,0,0.1);  border: 1px solid rgba(255,215,0,0.28); }
+    .pts-win     { background: rgba(0,255,135,0.07); border: 1px solid rgba(0,255,135,0.2); }
+    .pts-draw    { background: rgba(99,130,255,0.08);border: 1px solid rgba(99,130,255,0.2); }
+    .pts-loss    { background: rgba(255,59,59,0.05); border: 1px solid rgba(255,59,59,0.15); }
+    .pts-icon  { font-size: 1rem; flex-shrink: 0; }
+    .pts-label { flex: 1; color: var(--text); }
+    .pts-badge {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem; letter-spacing: 1px;
+      padding: 2px 10px; border-radius: 6px;
+    }
+    .pts-win-big .pts-badge { color: var(--gold);  background: rgba(255,215,0,0.15); }
+    .pts-win     .pts-badge { color: var(--green); background: rgba(0,255,135,0.12); }
+    .pts-draw    .pts-badge { color: #8fa8ff;       background: rgba(99,130,255,0.12); }
+    .pts-loss    .pts-badge { color: var(--muted);  background: rgba(255,255,255,0.05); }
+
+    .tag-out {
+      display: inline-block;
+      background: var(--red); color: #fff;
+      font-size: 0.68rem; font-weight: 700;
+      padding: 2px 6px; border-radius: 4px; letter-spacing: 1px;
+    }
+
+    .rules-footer {
+      text-align: center;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.1rem;
+      color: var(--muted);
+      letter-spacing: 4px;
+      margin-top: 22px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+
     /* ── MOBILE ── */
     @media (max-width: 600px) {
       .team-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
@@ -758,11 +928,93 @@
   </div>
 </div>
 
+<!-- HOW TO PLAY MODAL -->
+<div class="rules-overlay" id="rulesOverlay" onclick="handleRulesClick(event)">
+  <div class="rules-modal">
+    <button class="rules-close" onclick="closeRules()">✕</button>
+
+    <div class="rules-header">
+      <div class="rules-icon-row">⚽ 🏆 ⚽</div>
+      <h2 class="rules-title">HOW TO PLAY</h2>
+      <div class="rules-tagline">FIFA 2026 — Family Edition</div>
+    </div>
+
+    <div class="rules-list">
+
+      <div class="rule-card">
+        <div class="rule-num">1</div>
+        <div class="rule-body">
+          <div class="rule-heading">PICK YOUR TEAM</div>
+          <div class="rule-text">Every family member picks <strong>one team</strong> from all 48 FIFA World Cup teams. Multiple members can choose the same team — so don't panic if your favourite is taken! Once locked in, your pick is final.</div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">2</div>
+        <div class="rule-body">
+          <div class="rule-heading">EARN POINTS EVERY MATCH</div>
+          <div class="rule-text">Your team earns you points for every match they play throughout the tournament:</div>
+          <div class="pts-grid">
+            <div class="pts-row pts-win-big">
+              <span class="pts-icon">🔥</span>
+              <span class="pts-label">Win by <strong>3 or more goals</strong></span>
+              <span class="pts-badge">15 PTS</span>
+            </div>
+            <div class="pts-row pts-win">
+              <span class="pts-icon">✅</span>
+              <span class="pts-label">Win by any margin</span>
+              <span class="pts-badge">10 PTS</span>
+            </div>
+            <div class="pts-row pts-draw">
+              <span class="pts-icon">🤝</span>
+              <span class="pts-label">Draw</span>
+              <span class="pts-badge">5 PTS</span>
+            </div>
+            <div class="pts-row pts-loss">
+              <span class="pts-icon">❌</span>
+              <span class="pts-label">Loss</span>
+              <span class="pts-badge">0 PTS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">3</div>
+        <div class="rule-body">
+          <div class="rule-heading">TRACK THE LEADERBOARD</div>
+          <div class="rule-text">Points stack up across every match your team plays — group stage, knockouts, all of it. Check the <strong>Leaderboard</strong> to see the standings. If two or more members have equal points they share the same rank.</div>
+        </div>
+      </div>
+
+      <div class="rule-card">
+        <div class="rule-num">4</div>
+        <div class="rule-body">
+          <div class="rule-heading">SURVIVE THE KNOCKOUTS</div>
+          <div class="rule-text">As the real World Cup progresses, teams that get knocked out are marked <span class="tag-out">OUT</span> on the site. Your score freezes the moment your team is eliminated — no more points after that!</div>
+        </div>
+      </div>
+
+      <div class="rule-card rule-card-gold">
+        <div class="rule-num rule-num-gold">🏆</div>
+        <div class="rule-body">
+          <div class="rule-heading">LAST TEAM STANDING WINS</div>
+          <div class="rule-text">The family member whose team is the <strong>very last team still alive</strong> in the tournament wins the ultimate bragging rights. Points settle the side battles — but survival is everything. Who will be the last one standing?</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="rules-footer">⚽ &nbsp; GOOD LUCK TO ALL &nbsp; ⚽</div>
+  </div>
+</div>
+
 <!-- HEADER -->
 <header>
   <div class="trophy-row">🏆 ⚽ 🏆</div>
   <h1>FIFA 2026</h1>
   <div class="subtitle">⚡ Last Team Standing — Family Edition ⚡</div>
+  <button class="rules-btn" onclick="openRules()">📖 HOW TO PLAY</button>
 </header>
 
 <!-- LAST PICK BANNER -->
@@ -1303,6 +1555,20 @@
       launchConfetti(200);
     }
   }
+
+  // ── Rules modal ───────────────────────────────────────────────────────────
+  function openRules() {
+    document.getElementById('rulesOverlay').classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeRules() {
+    document.getElementById('rulesOverlay').classList.remove('show');
+    document.body.style.overflow = '';
+  }
+  function handleRulesClick(e) {
+    if (e.target === e.currentTarget) closeRules();
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeRules(); });
 
   init();
 </script>
